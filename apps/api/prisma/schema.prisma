@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String       @id @default(uuid())
+  email             String       @unique
+  password          String
+  name              String?
+  wallpaperUrl      String?
+  avatarUrl         String?
+  appIconUrl        String?
+  theme             String       @default("dark")
+  instagramUsername String?
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @default(now()) @updatedAt @map("updated_at")
+  createdUserId     String?      @map("created_user")
+  updatedUserId     String?      @map("updated_user")
+  submissions       Submission[]
+}
+
+model Gym {
+  id            String       @id @default(uuid())
+  name          String
+  photoUrl      String?
+  latitude      Float
+  longitude     Float
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @default(now()) @updatedAt @map("updated_at")
+  createdUserId String?      @map("created_user")
+  updatedUserId String?      @map("updated_user")
+  submissions   Submission[]
+}
+
+model Exercise {
+  id            String       @id @default(uuid())
+  name          String
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @default(now()) @updatedAt @map("updated_at")
+  createdUserId String?      @map("created_user")
+  updatedUserId String?      @map("updated_user")
+  submissions   Submission[]
+}
+
+model Submission {
+  id            String   @id @default(uuid())
+  weight        Float
+  reps          Int      @default(1)
+  videoUrl      String
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+  createdUserId String?  @map("created_user")
+  updatedUserId String?  @map("updated_user")
+  userId        String
+  gymId         String
+  exerciseId    String
+  user          User     @relation(fields: [userId], references: [id])
+  gym           Gym      @relation(fields: [gymId], references: [id])
+  exercise      Exercise @relation(fields: [exerciseId], references: [id])
+}

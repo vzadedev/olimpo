@@ -1,0 +1,17 @@
+{
+  "name": "gymrank",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "setup": "pnpm rebuild prisma @prisma/client @prisma/engines bcrypt && pnpm --filter api prisma:generate"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@apollo/protobufjs",
+      "@prisma/client",
+      "@prisma/engines",
+      "bcrypt",
+      "prisma"
+    ]
+  }
+}
