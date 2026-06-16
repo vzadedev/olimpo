@@ -2,7 +2,10 @@ node_modules
 dist
 .next
 .env
+.env.production
 .env.local
+.env.*.local
 *.log
+.prisma
 apps/api/uploads/*
 !apps/api/uploads/.gitkeep
