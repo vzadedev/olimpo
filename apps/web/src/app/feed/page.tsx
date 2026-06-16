@@ -525,10 +525,11 @@ function CommentsSheet({
             </li>
           ))}
           {comments.length === 0 && (
-             <div className="py-8 text-center text-sm text-muted-foreground">
-               Seja o primeiro a comentar!
-             </div>
+            <div className="py-8 text-center text-sm text-muted-foreground">
+              Seja o primeiro a comentar!
+            </div>
           )}
+        </ul>
         <div className="border-t border-white/10 p-4 pb-safe bg-black/20">
           {replyTo && (
             <div className="mb-2 flex items-center justify-between text-xs text-white/60">
@@ -554,7 +555,7 @@ function CommentsSheet({
               <MessageCircle size={18} />
             </button>
           </div>
-        </div></div>
+        </div>
       </div>
     </Sheet>
   );
