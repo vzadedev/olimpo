@@ -55,7 +55,7 @@ export default function ExerciseDetailPage() {
         </Link>
         <div>
           <h1 className="text-xl font-bold">{exercise?.exerciseName ?? 'Exercício'}</h1>
-          <p className="text-xs text-primary">Ranking & treinos</p>
+          <p className="text-xs text-primary">Ranking e levantamentos</p>
         </div>
       </header>
 
@@ -101,10 +101,10 @@ export default function ExerciseDetailPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-bold">📋 Treinos realizados</h2>
+        <h2 className="mb-3 text-lg font-bold">📋 Histórico de levantamentos</h2>
         {workoutsLoading && <p className="text-sm text-muted-foreground">Carregando...</p>}
         {workouts.length === 0 && !workoutsLoading && (
-          <p className="text-sm text-muted-foreground">Nenhum treino registrado.</p>
+          <p className="text-sm text-muted-foreground">Ninguém registrou levantamentos ainda. Seja o primeiro!</p>
         )}
         <ul className="space-y-2">
           {workouts.map((w) => (
@@ -124,7 +124,7 @@ export default function ExerciseDetailPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-black">{w.weight}kg</p>
-                  <p className="text-xs text-muted-foreground">{w.reps} reps · score {w.score}</p>
+                  <p className="text-xs text-muted-foreground">{w.reps} rep. · {w.score} pts</p>
                 </div>
               </div>
             </li>
@@ -137,7 +137,7 @@ export default function ExerciseDetailPage() {
         className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-4 font-bold text-black"
       >
         <Plus size={20} />
-        Novo treino
+        Novo levantamento
       </Link>
     </div>
   );

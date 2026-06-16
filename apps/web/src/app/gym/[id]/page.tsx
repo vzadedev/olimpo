@@ -40,7 +40,7 @@ export default function GymExercisesPage() {
         </Link>
         <div>
           <h1 className="text-xl font-bold">{gym?.name ?? 'Academia'}</h1>
-          <p className="text-xs text-muted-foreground">Escolha um exercício</p>
+          <p className="text-xs text-muted-foreground">Escolha um exercício para competir</p>
         </div>
       </header>
 
@@ -66,13 +66,13 @@ export default function GymExercisesPage() {
                 <div className="text-right">
                   <p className="text-2xl font-black text-primary">{ex.myScore}</p>
                   <p className="text-xs text-muted-foreground">
-                    {ex.myRank > 0 ? `#${ex.myRank}` : 'Sem score'}
+                    {ex.myRank > 0 ? `#${ex.myRank}` : 'Fora do ranking'}
                   </p>
                 </div>
               </div>
               {ex.myBestWeight > 0 && (
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Melhor: {ex.myBestWeight}kg
+                  Recorde: {ex.myBestWeight}kg
                 </p>
               )}
             </Link>
@@ -87,7 +87,7 @@ export default function GymExercisesPage() {
         )}
       >
         <Trophy size={20} />
-        Registrar treino
+        Provar meu valor
       </Link>
     </div>
   );

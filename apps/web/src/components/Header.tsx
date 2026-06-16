@@ -10,7 +10,7 @@ export function Header() {
     <header className="border-b border-white/10 px-4 py-4">
       <div className="mx-auto flex max-w-lg items-center justify-between">
         <Link href="/" className="text-xl font-bold text-accent">
-          GymRank
+          OLIMPO
         </Link>
         {token ? (
           <button

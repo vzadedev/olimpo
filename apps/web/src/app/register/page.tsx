@@ -37,7 +37,7 @@ export default function RegisterPage() {
       });
       if (data?.register.accessToken) {
         login(data.register.accessToken);
-        toast.success('Conta criada com sucesso!');
+        toast.success('Conta criada! Hora de subir no ranking.');
         router.push('/');
       }
     } catch (err: unknown) {
@@ -53,51 +53,65 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-[80vh] flex-col justify-center px-2">
-      <h1 className="mb-2 text-center text-3xl font-bold">Criar conta</h1>
-      <p className="mb-8 text-center text-sm text-muted-foreground">
-        Junte-se ao GymRank
-      </p>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Nome (opcional)"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-xl border border-border bg-surface px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-xl border border-border bg-surface px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Senha (mín. 6 caracteres)"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-xl border border-border bg-surface px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
-          minLength={6}
-          required
-        />
-        {error && <p className="text-center text-sm text-destructive">{error}</p>}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-xl bg-primary py-3 font-semibold text-black disabled:opacity-50"
-        >
-          {loading ? 'Criando...' : 'Criar conta'}
-        </button>
-      </form>
-      <p className="mt-6 text-center text-sm text-muted-foreground">
-        Já tem conta?{' '}
-        <Link href="/login" className="font-medium text-primary">
-          Entrar
-        </Link>
-      </p>
+    <div className="flex min-h-[80vh] flex-col justify-center px-4 py-8">
+      <div className="mx-auto w-full max-w-md">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-black tracking-tight">Criar conta</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Junte-se à competição do OLIMPO</p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-6 rounded-2xl border border-border bg-surface p-6 shadow-sm">
+          <div className="space-y-4">
+            <div>
+              <input
+                type="text"
+                placeholder="Nome de atleta (opcional)"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-4 py-3.5 text-sm font-medium outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div>
+              <input
+                type="email"
+                placeholder="E-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-4 py-3.5 text-sm font-medium outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-primary"
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                placeholder="Senha (mín. 6 caracteres)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-4 py-3.5 text-sm font-medium outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-primary"
+                minLength={6}
+                required
+              />
+            </div>
+          </div>
+
+          {error && <p className="text-center text-sm font-semibold text-destructive">{error}</p>}
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-black shadow-sm transition-transform hover:bg-primary/90 active:scale-95 disabled:opacity-50 disabled:active:scale-100"
+          >
+            {loading ? 'Criando...' : 'Criar conta'}
+          </button>
+        </form>
+
+        <p className="mt-8 text-center text-sm font-medium text-muted-foreground">
+          Já tem conta?{' '}
+          <Link href="/login" className="text-primary hover:underline">
+            Entrar
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

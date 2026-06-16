@@ -1,4 +1,4 @@
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, ID, Int, ObjectType } from '@nestjs/graphql';
 import { ExerciseTitle } from '../train/train.models';
 
 @ObjectType()
@@ -11,6 +11,9 @@ export class User {
 
   @Field({ nullable: true })
   name?: string;
+
+  @Field({ nullable: true })
+  role?: string;
 
   @Field({ nullable: true })
   wallpaperUrl?: string;
@@ -26,6 +29,24 @@ export class User {
 
   @Field({ nullable: true })
   instagramUsername?: string;
+
+  @Field({ nullable: true })
+  city?: string;
+
+  @Field(() => Float, { nullable: true })
+  heightCm?: number;
+
+  @Field(() => Float, { nullable: true })
+  weightKg?: number;
+
+  @Field({ nullable: true })
+  birthDate?: Date;
+
+  @Field({ nullable: true })
+  sex?: string;
+
+  @Field({ nullable: true })
+  bmi?: number;
 
   @Field({ nullable: true })
   globalRank?: string;

@@ -12,6 +12,7 @@
     "prisma:seed": "prisma db seed"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.104.2",
     "@apollo/server": "^5.5.1",
     "@as-integrations/express4": "^1.1.2",
     "@as-integrations/express5": "^1.1.2",

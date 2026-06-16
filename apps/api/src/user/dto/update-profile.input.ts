@@ -1,5 +1,5 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { IsIn, IsOptional, Matches, MaxLength, ValidateIf } from 'class-validator';
+import { Field, Float, InputType } from '@nestjs/graphql';
+import { IsIn, IsOptional, Matches, MaxLength, Min, ValidateIf } from 'class-validator';
 
 @InputType()
 export class UpdateProfileInput {
@@ -32,4 +32,28 @@ export class UpdateProfileInput {
     message: 'Instagram inválido (use apenas letras, números, . e _)',
   })
   instagramUsername?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @MaxLength(80)
+  city?: string;
+
+  @Field(() => Float, { nullable: true })
+  @IsOptional()
+  @Min(50)
+  heightCm?: number;
+
+  @Field(() => Float, { nullable: true })
+  @IsOptional()
+  @Min(20)
+  weightKg?: number;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  birthDate?: Date;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsIn(['male', 'female', 'other'])
+  sex?: string;
 }

@@ -8,20 +8,56 @@ datasource db {
 }
 
 model User {
-  id                String       @id @default(uuid())
-  email             String       @unique
+  id                String            @id @default(uuid())
+  email             String            @unique
   password          String
   name              String?
+  role              String            @default("user")
+  city              String?
+  heightCm          Float?            @map("height_cm")
+  weightKg          Float?            @map("weight_kg")
+  birthDate         DateTime?         @map("birth_date")
+  sex               String?
   wallpaperUrl      String?
   avatarUrl         String?
   appIconUrl        String?
-  theme             String       @default("dark")
+  theme             String            @default("dark")
   instagramUsername String?
-  createdAt         DateTime     @default(now()) @map("created_at")
-  updatedAt         DateTime     @default(now()) @updatedAt @map("updated_at")
-  createdUserId     String?      @map("created_user")
-  updatedUserId     String?      @map("updated_user")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @default(now()) @updatedAt @map("updated_at")
+  createdUserId     String?           @map("created_user")
+  updatedUserId     String?           @map("updated_user")
   submissions       Submission[]
+  reelViews         ReelView[]
+  reelReports       ReelReport[]
+  reelComments      ReelComment[]
+  goals             UserGoal[]
+  workoutPlans      WorkoutPlan[]
+  workoutSchedules  WorkoutSchedule[]
+  workoutSessions   WorkoutSession[]
+  dietGoal          UserDietGoal?
+  meals             Meal[]
+  dietAnalysisLogs  DietAnalysisLog[]
+  posts             Post[]
+  postLikes         PostLike[]
+  postComments      PostComment[]
+  postReports       PostReport[]
+  postMentions      PostMention[]     @relation("PostMentions")
+  notifications     Notification[]
+  badges            UserBadge[]
+  battlesChallenged Battle[]          @relation("BattleChallenger")
+  battlesReceived   Battle[]          @relation("BattleChallenged")
+  battlesWon        Battle[]          @relation("BattleWinner")
+  battleParticipants BattleParticipant[]
+  battleAttempts    BattleAttempt[]
+  battleStats       UserBattleStats?
+  checkins          Checkin[]
+  liftContests      LiftContest[]     @relation("Contestant")
+  privacySettings   UserPrivacySettings?
+  checkinReactions  CheckinReaction[]
+  bodyMetricLogs    UserBodyMetricLog[]
+  reelLikes         ReelLike[]
+  dietPlans         DietPlan[]
 }
 
 model Gym {
@@ -35,31 +71,537 @@ model Gym {
   createdUserId String?      @map("created_user")
   updatedUserId String?      @map("updated_user")
   submissions   Submission[]
+  checkins      Checkin[]
 }
 
 model Exercise {
-  id            String       @id @default(uuid())
+  id            String                @id @default(uuid())
   name          String
-  createdAt     DateTime     @default(now()) @map("created_at")
-  updatedAt     DateTime     @default(now()) @updatedAt @map("updated_at")
-  createdUserId String?      @map("created_user")
-  updatedUserId String?      @map("updated_user")
+  muscleGroup   String?               @map("muscle_group")
+  description   String?
+  isDefault     Boolean               @default(false) @map("is_default")
+  createdAt     DateTime              @default(now()) @map("created_at")
+  updatedAt     DateTime              @default(now()) @updatedAt @map("updated_at")
+  createdUserId String?               @map("created_user")
+  updatedUserId String?               @map("updated_user")
   submissions   Submission[]
+  goals         UserGoal[]
+  planExercises WorkoutPlanExercise[]
+  battles       Battle[]
+  battleStatsFavorite UserBattleStats[] @relation("FavoriteExercise")
 }
 
 model Submission {
-  id            String   @id @default(uuid())
+  id            String        @id @default(uuid())
   weight        Float
-  reps          Int      @default(1)
+  reps          Int           @default(1)
   videoUrl      String
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
-  createdUserId String?  @map("created_user")
-  updatedUserId String?  @map("updated_user")
+  videoValidationStatus String @default("pending") @map("video_validation_status")
+  videoValidationResult Json?  @map("video_validation_result")
+  videoValidatedAt DateTime?  @map("video_validated_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
+  createdUserId String?       @map("created_user")
+  updatedUserId String?       @map("updated_user")
   userId        String
   gymId         String
   exerciseId    String
-  user          User     @relation(fields: [userId], references: [id])
-  gym           Gym      @relation(fields: [gymId], references: [id])
-  exercise      Exercise @relation(fields: [exerciseId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
+  gym           Gym           @relation(fields: [gymId], references: [id])
+  exercise      Exercise      @relation(fields: [exerciseId], references: [id])
+  views         ReelView[]
+  reports       ReelReport[]
+  comments      ReelComment[]
+  likes         ReelLike[]
+  linkedPosts   Post[]
+  battleAttempts BattleAttempt[]
+  liftContests  LiftContest[] @relation("ContestedSubmission")
+}
+
+model ReelLike {
+  id           String     @id @default(uuid())
+  submissionId String     @map("submission_id")
+  userId       String     @map("user_id")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, userId])
+}
+
+model ReelView {
+  id           String     @id @default(uuid())
+  submissionId String     @map("submission_id")
+  userId       String?    @map("user_id")
+  viewedAt     DateTime   @default(now()) @map("viewed_at")
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  user         User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([submissionId, userId, viewedAt])
+}
+
+model ReelReport {
+  id             String     @id @default(uuid())
+  submissionId   String     @map("submission_id")
+  reporterUserId String     @map("reporter_user_id")
+  reason         String
+  description    String?
+  status         String     @default("pending")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  submission     Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reporter       User       @relation(fields: [reporterUserId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, reporterUserId])
+}
+
+model ReelComment {
+  id           String        @id @default(uuid())
+  submissionId String        @map("submission_id")
+  userId       String        @map("user_id")
+  parentId     String?       @map("parent_id")
+  text         String
+  createdAt    DateTime      @default(now()) @map("created_at")
+  submission   Submission    @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent       ReelComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies      ReelComment[] @relation("CommentReplies")
+
+  @@index([submissionId, createdAt])
+}
+
+model UserGoal {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  title        String
+  description  String?
+  targetValue  Float     @map("target_value")
+  currentValue Float     @default(0) @map("current_value")
+  unit         String
+  exerciseId   String?   @map("exercise_id")
+  deadline     DateTime?
+  status       String    @default("in_progress")
+  completedAt  DateTime? @map("completed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise     Exercise? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status])
+}
+
+model WorkoutPlan {
+  id          String                @id @default(uuid())
+  userId      String                @map("user_id")
+  name        String
+  description String?
+  createdAt   DateTime              @default(now()) @map("created_at")
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises   WorkoutPlanExercise[]
+  schedules   WorkoutSchedule[]
+  sessions    WorkoutSession[]
+}
+
+model WorkoutPlanExercise {
+  id              String   @id @default(uuid())
+  planId          String   @map("plan_id")
+  exerciseId      String   @map("exercise_id")
+  sets            Int      @default(3)
+  reps            Int      @default(10)
+  suggestedWeight Float?   @map("suggested_weight")
+  restSeconds     Int      @default(60) @map("rest_seconds")
+  orderIndex      Int      @default(0) @map("order_index")
+  plan            WorkoutPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  exercise        Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  sessionSets     WorkoutSessionSet[]
+}
+
+model WorkoutSchedule {
+  id            String      @id @default(uuid())
+  userId        String      @map("user_id")
+  planId        String      @map("plan_id")
+  scheduledDate DateTime    @map("scheduled_date") @db.Date
+  completed     Boolean     @default(false)
+  completedAt   DateTime?   @map("completed_at")
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan          WorkoutPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  sessions      WorkoutSession[]
+
+  @@index([userId, scheduledDate])
+}
+
+model WorkoutSession {
+  id          String              @id @default(uuid())
+  userId      String              @map("user_id")
+  planId      String              @map("plan_id")
+  scheduleId  String?             @map("schedule_id")
+  startedAt   DateTime            @default(now()) @map("started_at")
+  completedAt DateTime?           @map("completed_at")
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan        WorkoutPlan         @relation(fields: [planId], references: [id], onDelete: Cascade)
+  schedule    WorkoutSchedule?    @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
+  sets        WorkoutSessionSet[]
+}
+
+model WorkoutSessionSet {
+  id             String              @id @default(uuid())
+  sessionId      String              @map("session_id")
+  planExerciseId String              @map("plan_exercise_id")
+  setNumber      Int                 @map("set_number")
+  completed      Boolean             @default(false)
+  completedAt    DateTime?           @map("completed_at")
+  session        WorkoutSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  planExercise   WorkoutPlanExercise @relation(fields: [planExerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, planExerciseId, setNumber])
+}
+
+model UserDietGoal {
+  id            String   @id @default(uuid())
+  userId        String   @unique @map("user_id")
+  caloriesGoal  Int      @map("calories_goal")
+  proteinGoalG  Float    @map("protein_goal_g")
+  carbGoalG     Float    @map("carb_goal_g")
+  fatGoalG      Float    @map("fat_goal_g")
+  objective     String
+  aiExplanation String?  @map("ai_explanation")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserBodyMetricLog {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  weightKg   Float    @map("weight_kg")
+  heightCm   Float?   @map("height_cm")
+  bmi        Float
+  recordedAt DateTime @default(now()) @map("recorded_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, recordedAt])
+}
+
+model DietRecommendationCache {
+  id            String   @id @default(uuid())
+  weightBucket  Int      @map("weight_bucket")
+  heightBucket  Int      @map("height_bucket")
+  bmiBucket     Float    @map("bmi_bucket")
+  sex           String?
+  objective     String
+  caloriesGoal  Int      @map("calories_goal")
+  proteinGoalG  Float    @map("protein_goal_g")
+  carbGoalG     Float    @map("carb_goal_g")
+  fatGoalG      Float    @map("fat_goal_g")
+  aiExplanation String   @map("ai_explanation")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@unique([weightBucket, heightBucket, bmiBucket, sex, objective])
+}
+
+model DietPlan {
+  id          String          @id @default(uuid())
+  userId      String          @map("user_id")
+  name        String
+  description String?
+  isActive    Boolean         @default(false) @map("is_active")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meals       DietPlanMeal[]
+
+  @@index([userId, isActive])
+}
+
+model DietPlanMeal {
+  id         String   @id @default(uuid())
+  planId     String   @map("plan_id")
+  dayOfWeek  Int      @map("day_of_week")
+  mealType   String   @map("meal_type")
+  name       String
+  notes      String?
+  calories   Int      @default(0)
+  proteinG   Float    @default(0) @map("protein_g")
+  carbG      Float    @default(0) @map("carb_g")
+  fatG       Float    @default(0) @map("fat_g")
+  sortOrder  Int      @default(0) @map("sort_order")
+  plan       DietPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@index([planId, dayOfWeek, mealType])
+}
+
+model Meal {
+  id           String     @id @default(uuid())
+  userId       String     @map("user_id")
+  name         String
+  mealType     String     @map("meal_type")
+  eatenAt      DateTime   @map("eaten_at")
+  notes        String?
+  aiConfidence String?    @map("ai_confidence")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  foods        MealFood[]
+
+  @@index([userId, eatenAt])
+}
+
+model MealFood {
+  id                  String  @id @default(uuid())
+  mealId              String  @map("meal_id")
+  foodName            String  @map("food_name")
+  preparationMethod   String? @map("preparation_method")
+  quantityG           Float?  @map("quantity_g")
+  quantityDescription String? @map("quantity_description")
+  calories            Float
+  proteinG            Float   @map("protein_g")
+  carbG               Float   @map("carb_g")
+  fatG                Float   @map("fat_g")
+  fiberG              Float   @default(0) @map("fiber_g")
+  wasEditedByUser     Boolean @default(false) @map("was_edited_by_user")
+  meal                Meal    @relation(fields: [mealId], references: [id], onDelete: Cascade)
+}
+
+model DietAnalysisLog {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model CommonFood {
+  id            String @id @default(uuid())
+  name          String
+  quantityGBase Float  @default(100) @map("quantity_g_base")
+  calories      Float
+  proteinG      Float  @map("protein_g")
+  carbG         Float  @map("carb_g")
+  fatG          Float  @map("fat_g")
+  fiberG        Float  @default(0) @map("fiber_g")
+  category      String @default("outros")
+
+  @@index([name])
+}
+
+model LiftContest {
+  id               String     @id @default(uuid())
+  submissionId     String     @map("submission_id")
+  contestantUserId String     @map("contestant_user_id")
+  reason           String
+  description      String?
+  status           String     @default("pending")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  submission       Submission @relation("ContestedSubmission", fields: [submissionId], references: [id], onDelete: Cascade)
+  contestant       User       @relation("Contestant", fields: [contestantUserId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, contestantUserId])
+  @@index([submissionId, status])
+}
+
+model Post {
+  id        String         @id @default(uuid())
+  userId    String         @map("user_id")
+  content   String
+  liftId    String?        @map("lift_id")
+  createdAt DateTime       @default(now()) @map("created_at")
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lift      Submission?    @relation(fields: [liftId], references: [id], onDelete: SetNull)
+  mentions  PostMention[]
+  tags      PostTag[]
+  likes     PostLike[]
+  comments  PostComment[]
+  reports   PostReport[]
+
+  @@index([createdAt])
+}
+
+model PostMention {
+  id              String @id @default(uuid())
+  postId          String @map("post_id")
+  mentionedUserId String @map("mentioned_user_id")
+  post            Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  mentionedUser   User   @relation("PostMentions", fields: [mentionedUserId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, mentionedUserId])
+}
+
+model PostTag {
+  id     String @id @default(uuid())
+  postId String @map("post_id")
+  tag    String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([tag])
+}
+
+model PostLike {
+  id        String   @id @default(uuid())
+  postId    String   @map("post_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model PostComment {
+  id        String        @id @default(uuid())
+  postId    String        @map("post_id")
+  userId    String        @map("user_id")
+  parentId  String?       @map("parent_id")
+  content   String
+  createdAt DateTime      @default(now()) @map("created_at")
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    PostComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   PostComment[] @relation("CommentReplies")
+
+  @@index([postId, createdAt])
+}
+
+model PostReport {
+  id             String   @id @default(uuid())
+  postId         String   @map("post_id")
+  reporterUserId String   @map("reporter_user_id")
+  reason         String
+  description    String?
+  status         String   @default("pending")
+  createdAt      DateTime @default(now()) @map("created_at")
+  post           Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reporter       User     @relation(fields: [reporterUserId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, reporterUserId])
+}
+
+model Notification {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  type          String
+  referenceId   String   @map("reference_id")
+  referenceType String   @map("reference_type")
+  read          Boolean  @default(false)
+  createdAt     DateTime @default(now()) @map("created_at")
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read, createdAt])
+}
+
+model UserBadge {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  badgeType String   @map("badge_type")
+  earnedAt  DateTime @default(now()) @map("earned_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeType])
+  @@index([userId, earnedAt])
+}
+
+model Battle {
+  id                    String              @id @default(uuid())
+  challengerId          String              @map("challenger_id")
+  challengedId          String              @map("challenged_id")
+  exerciseId            String              @map("exercise_id")
+  type                  String              @default("duel")
+  modality              String              @default("max_weight")
+  status                String              @default("pending")
+  challengerBestKg      Float               @default(0) @map("challenger_best_kg")
+  challengedBestKg      Float               @default(0) @map("challenged_best_kg")
+  challengerBestVolume  Float               @default(0) @map("challenger_best_volume")
+  challengedBestVolume  Float               @default(0) @map("challenged_best_volume")
+  winnerId              String?             @map("winner_id")
+  provocationMessage    String?             @map("provocation_message")
+  windowStart           DateTime            @map("window_start")
+  windowEnd             DateTime            @map("window_end")
+  acceptedAt            DateTime?           @map("accepted_at")
+  completedAt           DateTime?           @map("completed_at")
+  resolvedAt            DateTime?           @map("resolved_at")
+  createdAt             DateTime            @default(now()) @map("created_at")
+  challenger            User                @relation("BattleChallenger", fields: [challengerId], references: [id], onDelete: Cascade)
+  challenged            User                @relation("BattleChallenged", fields: [challengedId], references: [id], onDelete: Cascade)
+  winner                User?               @relation("BattleWinner", fields: [winnerId], references: [id], onDelete: SetNull)
+  exercise              Exercise            @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  participants          BattleParticipant[]
+  attempts              BattleAttempt[]
+
+  @@index([challengerId, status])
+  @@index([challengedId, status])
+  @@index([status, windowEnd])
+}
+
+model BattleAttempt {
+  id           String      @id @default(uuid())
+  battleId     String      @map("battle_id")
+  userId       String      @map("user_id")
+  weightKg     Float       @map("weight_kg")
+  reps         Int         @default(1)
+  volume       Float
+  submissionId String?     @map("submission_id")
+  attemptedAt  DateTime    @default(now()) @map("attempted_at")
+  battle       Battle      @relation(fields: [battleId], references: [id], onDelete: Cascade)
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submission   Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+
+  @@index([battleId, userId])
+}
+
+model UserBattleStats {
+  id                 String    @id @default(uuid())
+  userId             String    @unique @map("user_id")
+  totalBattles       Int       @default(0) @map("total_battles")
+  wins               Int       @default(0)
+  losses             Int       @default(0)
+  draws              Int       @default(0)
+  winStreak          Int       @default(0) @map("win_streak")
+  bestWinStreak      Int       @default(0) @map("best_win_streak")
+  favoriteExerciseId String?   @map("favorite_exercise_id")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  favoriteExercise   Exercise? @relation("FavoriteExercise", fields: [favoriteExerciseId], references: [id], onDelete: SetNull)
+}
+
+model BattleParticipant {
+  id       String   @id @default(uuid())
+  battleId String   @map("battle_id")
+  userId   String   @map("user_id")
+  bestKg   Float    @default(0) @map("best_kg")
+  joinedAt DateTime @default(now()) @map("joined_at")
+  battle   Battle   @relation(fields: [battleId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([battleId, userId])
+}
+
+model Checkin {
+  id          String            @id @default(uuid())
+  userId      String            @map("user_id")
+  gymId       String            @map("gym_id")
+  isPublic    Boolean           @default(false) @map("is_public")
+  checkedInAt DateTime          @default(now()) @map("checked_in_at")
+  expiresAt   DateTime          @map("expires_at")
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gym         Gym               @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  reactions   CheckinReaction[]
+
+  @@index([userId, checkedInAt])
+  @@index([gymId, expiresAt])
+}
+
+model CheckinReaction {
+  id        String   @id @default(uuid())
+  checkinId String   @map("checkin_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  checkin   Checkin  @relation(fields: [checkinId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([checkinId, userId])
+}
+
+model UserPrivacySettings {
+  id              String  @id @default(uuid())
+  userId          String  @unique @map("user_id")
+  publicCheckin   Boolean @default(false) @map("public_checkin")
+  publicProfile   Boolean @default(true) @map("public_profile")
+  showInRankings  Boolean @default(true) @map("show_in_rankings")
+  autoBattlePosts Boolean @default(true) @map("auto_battle_posts")
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

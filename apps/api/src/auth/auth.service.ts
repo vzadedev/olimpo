@@ -50,11 +50,11 @@ export class AuthService {
       where: { email: input.email },
     });
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('E-mail ou senha inválidos');
     }
     const valid = await bcrypt.compare(input.password, user.password);
     if (!valid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('E-mail ou senha inválidos');
     }
     return this.signToken(user.id, user.email);
   }

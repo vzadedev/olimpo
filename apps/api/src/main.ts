@@ -12,9 +12,13 @@ async function bootstrap() {
     mkdirSync(uploadsDir);
   }
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bodyParser: false,
+  });
+  app.useBodyParser('json', { limit: '10mb' });
+  app.useBodyParser('urlencoded', { limit: '10mb', extended: true });
   app.enableCors({ origin: true, credentials: true });
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useStaticAssets(uploadsDir, { prefix: '/uploads' });
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 

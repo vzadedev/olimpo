@@ -23,6 +23,8 @@ export const useThemeStore = create<ThemeState>()(
 );
 
 export function applyTheme(theme: Theme) {
-  document.documentElement.classList.toggle('dark', theme === 'dark');
-  document.documentElement.classList.toggle('light', theme === 'light');
+  const root = document.documentElement;
+  root.classList.remove('dark', 'light');
+  root.classList.add(theme === 'dark' ? 'dark' : 'light');
+  root.style.colorScheme = theme;
 }

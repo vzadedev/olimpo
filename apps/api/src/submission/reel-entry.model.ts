@@ -1,4 +1,4 @@
-import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
+import { Field, Float, ID, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class ReelEntry {
@@ -20,6 +20,9 @@ export class ReelEntry {
   @Field({ nullable: true })
   userName?: string;
 
+  @Field(() => ID)
+  userId: string;
+
   @Field({ nullable: true })
   instagramUsername?: string;
 
@@ -28,4 +31,19 @@ export class ReelEntry {
 
   @Field()
   gymName: string;
+
+  @Field(() => Int)
+  viewCount: number;
+
+  @Field(() => Int)
+  commentCount: number;
+
+  @Field(() => Int)
+  likeCount: number;
+
+  @Field()
+  likedByMe: boolean;
+
+  @Field()
+  isOwner: boolean;
 }

@@ -25,8 +25,8 @@ export default function HomePage() {
   return (
     <div className="px-2 pt-4 pb-20">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold">GymRank</h1>
-        <p className="text-sm text-muted-foreground">Competição e ranking nas academias</p>
+        <h1 className="text-2xl font-bold">OLIMPO</h1>
+        <p className="text-sm text-muted-foreground">Prove seu valor. Competição e ranking nas academias</p>
       </header>
 
       {user && (
@@ -42,7 +42,7 @@ export default function HomePage() {
             </div>
             {user.exerciseTitles && user.exerciseTitles.length > 0 && (
               <div className="text-right">
-                <p className="text-xs font-semibold text-primary">Título ativo</p>
+                <p className="text-xs font-semibold text-primary">Título em disputa</p>
                 <p className="mt-1 flex items-center justify-end gap-1 text-sm font-bold">
                   <Crown size={14} />
                   {user.exerciseTitles[0].title}
@@ -84,7 +84,7 @@ export default function HomePage() {
                 </div>
                 <div>
                   <p className="font-bold">{gym.name}</p>
-                  <p className="text-sm text-muted-foreground">Ver exercícios e ranking</p>
+                  <p className="text-sm text-muted-foreground">Competir e subir no ranking</p>
                 </div>
               </Link>
             </li>

@@ -21,18 +21,19 @@ export default function OnboardingPage() {
         className="z-10 w-full mb-12"
       >
         <h1 className="mb-4 text-4xl font-extrabold leading-tight tracking-tight text-white">
-          Transform Your Body, <br />
-          <span className="text-primary">Transform</span> Your Life
+          Prove seu valor. <br />
+          <span className="text-primary">Domine</span> a academia.
         </h1>
         <p className="mb-8 text-base text-muted-foreground leading-relaxed">
-          Every workout brings you closer to a stronger, healthier version of yourself.
+          Entre na competição, conquiste títulos e suba no ranking. Cada levantamento
+          conta para provar quem manda na academia.
         </p>
 
         <Link
           href="/register"
           className="group flex w-full items-center justify-between rounded-full border border-primary/30 bg-transparent p-2 pl-6 font-bold text-primary transition-all hover:bg-primary/10 active:scale-95"
         >
-          <span className="text-lg">Criar conta</span>
+          <span className="text-lg">Entrar na competição</span>
         </Link>
         <Link
           href="/login"

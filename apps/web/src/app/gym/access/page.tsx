@@ -28,7 +28,7 @@ export default function AccessPage() {
           <button onClick={() => router.back()} className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-foreground transition-transform active:scale-95">
             <ChevronLeft size={20} />
           </button>
-          <h1 className="text-xl font-bold text-white tracking-tight">Check-in</h1>
+          <h1 className="text-xl font-bold text-white tracking-tight">Check-in na academia</h1>
         </div>
       </header>
 
@@ -47,8 +47,8 @@ export default function AccessPage() {
               />
               <MapPin size={48} className="text-primary z-10" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Verificando Localização</h2>
-            <p className="text-muted-foreground">Aguarde enquanto verificamos se você está a menos de 100m da academia.</p>
+            <h2 className="text-2xl font-bold text-white mb-2">Verificando localização</h2>
+            <p className="text-muted-foreground">Confirmando que você está a menos de 100 m da academia para validar sua submissão.</p>
           </motion.div>
         )}
 
@@ -59,7 +59,7 @@ export default function AccessPage() {
             className="flex flex-col items-center w-full max-w-sm"
           >
             <div className="mb-4 flex items-center gap-2 text-primary font-medium">
-               <CheckCircle2 size={20} /> Localização Confirmada!
+               <CheckCircle2 size={20} /> Localização confirmada!
             </div>
             
             <div className="bg-surface w-full aspect-square rounded-3xl border-2 border-dashed border-primary/50 flex flex-col items-center justify-center p-8 mb-8 relative overflow-hidden">
@@ -72,7 +72,7 @@ export default function AccessPage() {
               onClick={() => setStep(3)}
               className="w-full rounded-full bg-primary py-4 font-bold text-black shadow-[0_0_20px_rgba(214,248,0,0.2)] transition active:scale-95"
             >
-              Simular Leitura (Demo)
+              Simular leitura (demo)
             </button>
           </motion.div>
         )}
@@ -86,14 +86,14 @@ export default function AccessPage() {
             <div className="mb-6 h-32 w-32 rounded-full bg-primary/20 flex items-center justify-center border border-primary/50">
               <Camera size={48} className="text-primary" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Equipamento Liberado!</h2>
-            <p className="text-muted-foreground mb-8">Prepare-se. O aplicativo gravará seu levantamento para enviar ao Leaderboard e ao Reels.</p>
+            <h2 className="text-2xl font-bold text-white mb-2">Equipamento liberado!</h2>
+            <p className="text-muted-foreground mb-8">Prepare-se. Vamos gravar seu levantamento para o ranking e os reels da competição.</p>
 
             <Link
               href="/reels"
               className="w-full block rounded-full bg-primary py-4 font-bold text-black shadow-[0_0_20px_rgba(214,248,0,0.2)]"
             >
-              Iniciar Gravação
+              Iniciar gravação
             </Link>
           </motion.div>
         )}

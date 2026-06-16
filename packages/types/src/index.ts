@@ -4,11 +4,18 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  role?: string;
   wallpaperUrl?: string;
   avatarUrl?: string;
   appIconUrl?: string;
   theme?: string;
   instagramUsername?: string;
+  city?: string;
+  heightCm?: number;
+  weightKg?: number;
+  bmi?: number;
+  sex?: string;
+  birthDate?: string;
   globalRank?: string;
   globalScore?: number;
   exerciseTitles?: import('./gamification').ExerciseTitle[];
@@ -78,12 +85,18 @@ export interface ReelEntry {
   id: string;
   videoUrl: string;
   weight: number;
+  userId?: string;
   createdAt: string;
   userEmail: string;
   userName?: string;
   instagramUsername?: string;
   exerciseName: string;
   gymName: string;
+  viewCount?: number;
+  commentCount?: number;
+  likeCount?: number;
+  likedByMe?: boolean;
+  isOwner?: boolean;
 }
 
 export interface AuthPayload {
@@ -97,4 +110,9 @@ export interface UpdateProfileInput {
   appIconUrl?: string;
   theme?: string;
   instagramUsername?: string;
+  city?: string;
+  heightCm?: number;
+  weightKg?: number;
+  sex?: string;
+  birthDate?: string;
 }

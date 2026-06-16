@@ -24,7 +24,7 @@ export default function TrainGymsPage() {
   return (
     <div className="px-2 pt-4 pb-20">
       <header className="mb-6 flex items-center gap-3">
-        <h1 className="text-2xl font-bold">Train</h1>
+        <h1 className="text-2xl font-bold">Competir</h1>
       </header>
 
       {loading && <p className="text-muted-foreground">Carregando...</p>}
@@ -50,7 +50,7 @@ export default function TrainGymsPage() {
               </div>
               <div>
                 <p className="font-bold">{gym.name}</p>
-                <p className="text-sm text-muted-foreground">Ver exercícios →</p>
+                <p className="text-sm text-muted-foreground">Escolha um exercício →</p>
               </div>
             </Link>
           </li>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useMutation, useQuery } from '@apollo/client';
 import { AtSign, LogOut, Moon, Sun, Upload, User as UserIcon, Image } from 'lucide-react';
 import type { User } from '@gymrank/types';
@@ -10,8 +11,9 @@ import { useThemeStore, applyTheme } from '@/store/theme';
 import { toast } from '@/store/toast';
 import { API_URL } from '@/lib/config';
 import { mediaUrl } from '@/lib/media';
-import { ME, UPDATE_PROFILE } from '@/lib/graphql';
+import { ME, MY_PRIVACY_SETTINGS, UPDATE_PRIVACY_SETTINGS, UPDATE_PROFILE } from '@/lib/graphql';
 import { cn } from '@/lib/utils';
+import { CityPicker } from '@/components/CityPicker';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -22,14 +24,22 @@ export default function SettingsPage() {
   const { theme, setTheme } = useThemeStore();
 
   const [name, setName] = useState('');
+  const [city, setCity] = useState('');
+  const [heightCm, setHeightCm] = useState('');
+  const [weightKg, setWeightKg] = useState('');
+  const [sex, setSex] = useState('');
   const [instagram, setInstagram] = useState('');
   const [wallpaperUrl, setWallpaperUrl] = useState<string | null>(null);
   const [appIconUrl, setAppIconUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState<'wallpaper' | 'icon' | null>(null);
 
-  const { data, loading } = useQuery<{ me: User }>(ME, { skip: !token });
+  const { data, loading, refetch } = useQuery<{ me: User }>(ME, { skip: !token });
+  const { data: privacyData } = useQuery(MY_PRIVACY_SETTINGS, { skip: !token });
   const [updateProfile] = useMutation(UPDATE_PROFILE);
+  const [updatePrivacy] = useMutation(UPDATE_PRIVACY_SETTINGS);
+
+  const privacy = privacyData?.myPrivacySettings;
 
   useEffect(() => {
     if (!token) router.replace('/login');
@@ -39,10 +49,17 @@ export default function SettingsPage() {
     const user = data?.me ?? cachedUser;
     if (user) {
       setName(user.name ?? '');
+      setCity((user as { city?: string }).city ?? '');
+      setHeightCm(String((user as { heightCm?: number }).heightCm ?? ''));
+      setWeightKg(String((user as { weightKg?: number }).weightKg ?? ''));
+      setSex((user as { sex?: string }).sex ?? '');
       setInstagram(user.instagramUsername ?? '');
       setWallpaperUrl(user.wallpaperUrl ?? null);
       setAppIconUrl(user.appIconUrl ?? null);
-      if (user.theme) setTheme(user.theme as 'dark' | 'light');
+      if (user.theme) {
+        setTheme(user.theme as 'dark' | 'light');
+        applyTheme(user.theme as 'dark' | 'light');
+      }
       setUser(user);
     }
   }, [data, cachedUser, setUser, setTheme]);
@@ -57,7 +74,7 @@ export default function SettingsPage() {
       const { url } = await res.json();
       if (type === 'wallpaper') setWallpaperUrl(url);
       else setAppIconUrl(url);
-      toast.success(type === 'wallpaper' ? 'Wallpaper carregado' : 'Ícone carregado');
+      toast.success(type === 'wallpaper' ? 'Papel de parede atualizado' : 'Ícone atualizado');
     } catch {
       toast.error('Erro no upload');
     } finally {
@@ -72,6 +89,10 @@ export default function SettingsPage() {
         variables: {
           input: {
             name: name.trim() || null,
+            city: city.trim() || null,
+            heightCm: heightCm ? parseFloat(heightCm) : null,
+            weightKg: weightKg ? parseFloat(weightKg) : null,
+            sex: sex || null,
             instagramUsername: instagram.replace('@', '').trim() || null,
             wallpaperUrl: wallpaperUrl || null,
             appIconUrl: appIconUrl || null,
@@ -82,6 +103,7 @@ export default function SettingsPage() {
       if (result?.updateProfile) {
         setUser(result.updateProfile);
         applyTheme(theme);
+        await refetch();
         toast.success('Perfil salvo com sucesso!');
       }
     } catch (err: unknown) {
@@ -100,14 +122,19 @@ export default function SettingsPage() {
 
   const handleLogout = () => {
     logout();
-    toast.success('Logout realizado');
+    toast.success('Até a próxima, atleta!');
     router.replace('/login');
   };
 
-  const toggleTheme = () => {
+  const toggleTheme = async () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     applyTheme(next);
+    try {
+      await updateProfile({ variables: { input: { theme: next } } });
+    } catch {
+      toast.error('Erro ao salvar tema');
+    }
   };
 
   if (!token) return null;
@@ -120,17 +147,47 @@ export default function SettingsPage() {
     <div className="px-2 pb-8">
       <h1 className="mb-6 text-2xl font-bold">Configurações</h1>
 
+      <div className="mb-6 grid grid-cols-2 gap-2">
+        {[
+          { href: '/metrics', label: 'Métricas' },
+          { href: '/workouts', label: 'Meus Treinos' },
+          { href: '/calendar', label: 'Calendário' },
+          { href: '/my-videos', label: 'Meus Vídeos' },
+          { href: '/rankings', label: 'Rankings' },
+          { href: '/diet', label: 'Dieta' },
+          { href: '/feed', label: 'Feed' },
+          { href: '/battles', label: 'Duelos' },
+        ].map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="rounded-xl border border-border bg-surface px-3 py-3 text-center text-sm font-semibold"
+          >
+            {item.label}
+          </Link>
+        ))}
+      </div>
+
+      {user?.role === 'admin' && (
+        <Link
+          href="/admin/reports"
+          className="mb-6 block rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-center text-sm font-semibold text-primary"
+        >
+          Painel de moderação
+        </Link>
+      )}
+
       <div className="relative mb-6 h-40 overflow-hidden rounded-2xl bg-surface">
         {wallpaper ? (
-          <img src={wallpaper} alt="Wallpaper" className="h-full w-full object-cover" />
+          <img src={wallpaper} alt="Papel de parede" className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full items-center justify-center bg-gradient-to-br from-primary/20 to-surface text-muted-foreground">
-            Sem wallpaper
+            Sem papel de parede
           </div>
         )}
         <label className="absolute bottom-3 right-3 flex cursor-pointer items-center gap-2 rounded-full bg-black/60 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm">
           <Upload size={14} />
-          {uploading === 'wallpaper' ? 'Enviando...' : 'Wallpaper'}
+          {uploading === 'wallpaper' ? 'Enviando...' : 'Papel de parede'}
           <input
             type="file"
             accept="image/*"
@@ -145,14 +202,16 @@ export default function SettingsPage() {
       </div>
 
       <div className="mb-6 flex items-center gap-3">
-        <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary/20 text-primary">
-          {appIcon ? (
-            <img src={appIcon} alt="Ícone" className="h-full w-full object-cover" />
-          ) : (
-            <UserIcon size={28} />
-          )}
-          <label className="absolute -bottom-1 -right-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-primary text-black">
-            <Image size={12} />
+        <div className="relative shrink-0">
+          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary/20 text-primary">
+            {appIcon ? (
+              <img src={appIcon} alt="Ícone" className="h-full w-full object-cover" />
+            ) : (
+              <UserIcon size={28} />
+            )}
+          </div>
+          <label className="absolute -bottom-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-2 border-background bg-primary text-black shadow-md">
+            <Image size={14} />
             <input
               type="file"
               accept="image/*"
@@ -170,7 +229,7 @@ export default function SettingsPage() {
           <p className="text-sm text-muted-foreground">{user?.email}</p>
           {user?.globalRank && (
             <p className="mt-1 text-xs font-semibold text-primary">
-              Rank global: {user.globalRank} ({user.globalScore} pts)
+              Ranking global: {user.globalRank} ({user.globalScore} pts)
             </p>
           )}
         </div>
@@ -198,8 +257,64 @@ export default function SettingsPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full rounded-xl border border-border bg-surface px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
-            placeholder="Seu nome"
+            placeholder="Seu nome de atleta"
           />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm text-muted-foreground">Cidade</label>
+          <CityPicker value={city} onChange={setCity} />
+          <p className="mt-2 text-xs text-muted-foreground">
+            Usada nos rankings da cidade e no feed social.
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-border bg-surface p-4">
+          <p className="mb-3 text-sm font-semibold">Corpo & métricas</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-xs text-muted-foreground">Altura (cm)</label>
+              <input
+                type="number"
+                value={heightCm}
+                onChange={(e) => setHeightCm(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+                placeholder="175"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-muted-foreground">Peso (kg)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={weightKg}
+                onChange={(e) => setWeightKg(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+                placeholder="75"
+              />
+            </div>
+          </div>
+          <div className="mt-3">
+            <label className="mb-1 block text-xs text-muted-foreground">Sexo</label>
+            <select
+              value={sex}
+              onChange={(e) => setSex(e.target.value)}
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Não informado</option>
+              <option value="male">Masculino</option>
+              <option value="female">Feminino</option>
+              <option value="other">Outro</option>
+            </select>
+          </div>
+          {(user as { bmi?: number })?.bmi != null && (
+            <p className="mt-2 text-xs text-primary">
+              IMC atual: {(user as { bmi?: number }).bmi}
+            </p>
+          )}
+          <p className="mt-2 text-xs text-muted-foreground">
+            Usado para metas de dieta com IA e evolução em Métricas.
+          </p>
         </div>
 
         <div>
@@ -216,8 +331,40 @@ export default function SettingsPage() {
             />
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            Em breve: vincular e publicar reels no Instagram.
+            Em breve: vincular e publicar seus destaques no Instagram.
           </p>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold">Privacidade</label>
+          <div className="space-y-2 rounded-xl border border-border bg-surface p-3">
+            {[
+              { key: 'publicCheckin', label: 'Check-in público' },
+              { key: 'publicProfile', label: 'Perfil público' },
+              { key: 'showInRankings', label: 'Aparecer nos rankings' },
+              { key: 'autoBattlePosts', label: 'Post automático ao vencer duelo' },
+            ].map((item) => (
+              <label key={item.key} className="flex items-center justify-between text-sm">
+                <span>{item.label}</span>
+                <input
+                  type="checkbox"
+                  checked={privacy?.[item.key as keyof typeof privacy] ?? false}
+                  onChange={async (e) => {
+                    try {
+                      await updatePrivacy({
+                        variables: {
+                          input: { [item.key]: e.target.checked },
+                        },
+                      });
+                    } catch {
+                      toast.error('Erro ao salvar privacidade');
+                    }
+                  }}
+                  className="h-4 w-4 accent-primary"
+                />
+              </label>
+            ))}
+          </div>
         </div>
 
         <div>

@@ -7,4 +7,13 @@ export class Exercise {
 
   @Field()
   name: string;
+
+  @Field({ nullable: true })
+  muscleGroup?: string;
+
+  @Field({ nullable: true })
+  description?: string;
+
+  @Field({ defaultValue: false })
+  isDefault: boolean;
 }

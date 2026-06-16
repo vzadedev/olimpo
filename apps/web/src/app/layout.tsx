@@ -1,21 +1,25 @@
 import type { Metadata, Viewport } from 'next';
 import { Providers } from '@/components/Providers';
 import { BottomNav } from '@/components/BottomNav';
+import { ThemeScript } from '@/components/ThemeProvider';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'GymRank',
-  description: 'Ranking de força nas academias',
+  title: 'OLIMPO — Competição nas academias',
+  description: 'Prove seu valor. Ranking de força, títulos e competição entre atletas.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
-    title: 'GymRank',
+    statusBarStyle: 'default',
+    title: 'OLIMPO',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0f0f0f',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0f0f0f' },
+  ],
 };
 
 export default function RootLayout({
@@ -24,10 +28,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className="dark" suppressHydrationWarning>
-      <body className="bg-background text-foreground antialiased selection:bg-primary/30">
+    <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
+      <body className="bg-black text-foreground antialiased selection:bg-primary/30">
+        {/* Global Deep Glow Background */}
+        <div className="fixed inset-0 z-[-1] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#4a0d0d]/30 via-black to-black" />
         <Providers>
-          <main className="mx-auto min-h-screen max-w-md pb-24 relative overflow-x-hidden">
+          <main className="relative mx-auto min-h-screen w-full max-w-md overflow-x-hidden pb-24">
             {children}
           </main>
           <BottomNav />

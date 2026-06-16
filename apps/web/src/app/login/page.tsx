@@ -30,49 +30,64 @@ export default function LoginPage() {
       });
       if (data?.login.accessToken) {
         login(data.login.accessToken);
-        toast.success('Login realizado!');
+        toast.success('Bem-vindo de volta à arena!');
         router.push('/');
       }
     } catch {
-      toast.error('Email ou senha inválidos');
+      toast.error('E-mail ou senha inválidos');
     }
   };
 
   return (
-    <div className="flex min-h-[70vh] flex-col justify-center">
-      <h1 className="mb-8 text-center text-3xl font-bold">GymRank</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-xl bg-surface px-4 py-3 outline-none ring-accent focus:ring-2"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-xl bg-surface px-4 py-3 outline-none ring-accent focus:ring-2"
-          required
-        />
-        {error && <p className="text-center text-sm text-red-400">{error}</p>}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-xl bg-accent py-3 font-semibold text-black disabled:opacity-50"
-        >
-          {loading ? 'Entrando...' : 'Entrar'}
-        </button>
-      </form>
-      <p className="mt-6 text-center text-sm text-muted-foreground">
-        Não tem conta?{' '}
-        <Link href="/register" className="font-medium text-primary">
-          Criar conta
-        </Link>
-      </p>
+    <div className="flex min-h-[80vh] flex-col justify-center px-4">
+      <div className="mx-auto w-full max-w-md">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-black tracking-tight">OLIMPO</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Entre na arena e acompanhe sua evolução</p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-6 rounded-2xl border border-border bg-surface p-6 shadow-sm">
+          <div className="space-y-4">
+            <div>
+              <input
+                type="email"
+                placeholder="E-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-4 py-3.5 text-sm font-medium outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-primary"
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                placeholder="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-4 py-3.5 text-sm font-medium outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-primary"
+                required
+              />
+            </div>
+          </div>
+
+          {error && <p className="text-center text-sm font-semibold text-destructive">{error}</p>}
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-black shadow-sm transition-transform hover:bg-primary/90 active:scale-95 disabled:opacity-50 disabled:active:scale-100"
+          >
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
+        </form>
+
+        <p className="mt-8 text-center text-sm font-medium text-muted-foreground">
+          Não tem conta?{' '}
+          <Link href="/register" className="text-primary hover:underline">
+            Criar conta
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

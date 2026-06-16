@@ -1,4 +1,8 @@
-const EARTH_RADIUS_METERS = 6_371_000;
+import { MAX_DISTANCE_METERS } from './constants';
+
+const EARTH_RADIUS_METERS = 6371e3;
+
+export { MAX_DISTANCE_METERS };
 
 export function distanceInMeters(
   lat1: number,

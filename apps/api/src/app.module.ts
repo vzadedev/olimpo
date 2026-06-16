@@ -12,6 +12,14 @@ import { SubmissionModule } from './submission/submission.module';
 import { UploadModule } from './upload/upload.module';
 import { TrainModule } from './train/train.module';
 import { GamificationModule } from './gamification/gamification.module';
+import { GoalsModule } from './goals/goals.module';
+import { WorkoutModule } from './workout/workout.module';
+import { RankingsModule } from './rankings/rankings.module';
+import { DietModule } from './diet/diet.module';
+import { PostsModule } from './posts/posts.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { BattlesModule } from './battles/battles.module';
+import { CheckinModule } from './checkin/checkin.module';
 
 @Module({
   imports: [
@@ -22,6 +30,7 @@ import { GamificationModule } from './gamification/gamification.module';
       playground: true,
       context: ({ req }: { req: Request }) => ({ req }),
     }),
+    NotificationsModule,
     PrismaModule,
     AuthModule,
     UserModule,
@@ -31,6 +40,13 @@ import { GamificationModule } from './gamification/gamification.module';
     UploadModule,
     TrainModule,
     GamificationModule,
+    GoalsModule,
+    WorkoutModule,
+    RankingsModule,
+    DietModule,
+    PostsModule,
+    BattlesModule,
+    CheckinModule,
   ],
 })
 export class AppModule {}

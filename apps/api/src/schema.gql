@@ -2,12 +2,130 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AnalyzeMealInput {
+  imageBase64: String!
+  mediaType: String! = "image/jpeg"
+}
+
 type AuthPayload {
   accessToken: String!
 }
 
+type BattleModel {
+  acceptedAt: DateTime
+  challenged: BattleUserModel!
+  challengedAttemptCount: Int!
+  challengedBestKg: Float!
+  challengedBestVolume: Float!
+  challenger: BattleUserModel!
+  challengerAttemptCount: Int!
+  challengerBestKg: Float!
+  challengerBestVolume: Float!
+  completedAt: DateTime
+  createdAt: DateTime!
+  deadline: DateTime!
+  exerciseId: ID!
+  exerciseName: String!
+  id: ID!
+  modality: String!
+  provocationMessage: String
+  status: String!
+  type: String!
+  windowEnd: DateTime!
+  windowStart: DateTime!
+  winner: BattleUserModel
+  winningSide: String
+}
+
+type BattleUserModel {
+  avatarUrl: String
+  id: ID!
+  instagramUsername: String
+  name: String
+}
+
+type BodyMetricPoint {
+  bmi: Float!
+  heightCm: Float
+  recordedAt: DateTime!
+  weightKg: Float!
+}
+
+type CalendarDayIndicatorModel {
+  planName: String!
+  status: String!
+}
+
+type CalendarDayModel {
+  completedCount: Int!
+  date: String!
+  indicators: [CalendarDayIndicatorModel!]!
+  missedCount: Int!
+  scheduledCount: Int!
+  status: String!
+}
+
+type CheckinModel {
+  checkedInAt: DateTime!
+  expiresAt: DateTime!
+  gymName: String!
+  id: ID!
+  isPublic: Boolean!
+  reactionCount: Float!
+  userAvatarUrl: String
+  userName: String!
+}
+
+type CityRankingEntryModel {
+  avatarUrl: String
+  name: String
+  rank: Int!
+  unit: String
+  userId: ID!
+  value: Float!
+}
+
+type CityRankingsResultModel {
+  category: String!
+  city: String
+  entries: [CityRankingEntryModel!]!
+  myRank: Int
+  myValue: Float
+}
+
+input CreateBattleInput {
+  challengedId: String!
+  exerciseId: String!
+  modality: String! = "max_weight"
+  provocationMessage: String
+  windowDurationMinutes: Int!
+  windowStart: DateTime!
+}
+
+input CreateCheckinInput {
+  gymId: String!
+  isPublic: Boolean = true
+  latitude: Float!
+  longitude: Float!
+}
+
+input CreateDietPlanInput {
+  description: String
+  meals: [DietPlanMealInput!]!
+  name: String!
+}
+
 input CreateExerciseInput {
   name: String!
+}
+
+input CreateGoalInput {
+  deadline: DateTime
+  description: String
+  exerciseId: ID
+  targetValue: Float!
+  title: String!
+  unit: String!
 }
 
 input CreateGymInput {
@@ -15,6 +133,33 @@ input CreateGymInput {
   longitude: Float!
   name: String!
   photoUrl: String
+}
+
+input CreateMealInput {
+  aiConfidence: String
+  eatenAt: DateTime!
+  foods: [MealFoodInput!]!
+  mealType: String!
+  name: String!
+  notes: String
+}
+
+input CreatePostCommentInput {
+  content: String!
+  mentionUserIds: [String!]
+  parentId: String
+}
+
+input CreatePostInput {
+  content: String!
+  liftId: String
+  mentionUserIds: [String!]
+}
+
+input CreateReelCommentInput {
+  parentId: ID
+  submissionId: ID!
+  text: String!
 }
 
 input CreateSubmissionInput {
@@ -27,14 +172,110 @@ input CreateSubmissionInput {
   weight: Float!
 }
 
+input CreateWorkoutPlanInput {
+  description: String
+  name: String!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
 
-type Exercise {
-  id: ID!
+type DeleteReelResult {
+  success: Boolean!
+}
+
+type DietAnalysisFoodModel {
+  calorias: Float!
+  carboidrato_g: Float!
+  fibra_g: Float
+  gordura_g: Float!
+  nome: String!
+  proteina_g: Float!
+  quantidade_estimada: String
+}
+
+type DietAnalysisResultModel {
+  alimentos: [DietAnalysisFoodModel!]
+  confianca: String
+  descricao: String
+  erro: String
+  observacao: String
+  totalCalorias: Float
+  totalCarboidrato: Float
+  totalFibra: Float
+  totalGordura: Float
+  totalProteina: Float
+}
+
+type DietDashboardModel {
+  caloriesConsumed: Float!
+  carbG: Float!
+  fatG: Float!
+  goal: UserDietGoalModel
+  meals: [MealModel!]!
+  proteinG: Float!
+}
+
+type DietDaySummaryModel {
+  calories: Float!
+  carbG: Float!
+  date: String!
+  fatG: Float!
+  proteinG: Float!
+}
+
+input DietPlanMealInput {
+  calories: Int = 0
+  carbG: Float = 0
+  dayOfWeek: Int!
+  fatG: Float = 0
+  mealType: String!
   name: String!
+  notes: String
+  proteinG: Float = 0
+}
+
+type DietPlanMealModel {
+  calories: Int!
+  carbG: Float!
+  dayOfWeek: Int!
+  fatG: Float!
+  id: ID!
+  mealType: String!
+  name: String!
+  notes: String
+  proteinG: Float!
+}
+
+type DietPlanModel {
+  description: String
+  id: ID!
+  isActive: Boolean!
+  meals: [DietPlanMealModel!]!
+  name: String!
+}
+
+type Exercise {
+  description: String
+  id: ID!
+  isDefault: Boolean!
+  muscleGroup: String
+  name: String!
+}
+
+type ExerciseCatalogModel {
+  description: String
+  id: ID!
+  isDefault: Boolean!
+  muscleGroup: String
+  name: String!
+}
+
+type ExerciseMaxWeight {
+  exerciseName: String!
+  maxWeight: Float!
 }
 
 type ExerciseTitle {
@@ -67,23 +308,210 @@ input LoginInput {
   password: String!
 }
 
+input MealFoodInput {
+  calories: Float!
+  carbG: Float!
+  fatG: Float!
+  fiberG: Float = 0
+  foodName: String!
+  preparationMethod: String
+  proteinG: Float!
+  quantityDescription: String
+  quantityG: Float
+  wasEditedByUser: Boolean = false
+}
+
+type MealFoodModel {
+  calories: Float!
+  carbG: Float!
+  fatG: Float!
+  fiberG: Float!
+  foodName: String!
+  id: ID!
+  proteinG: Float!
+  quantityDescription: String
+}
+
+type MealModel {
+  eatenAt: DateTime!
+  foods: [MealFoodModel!]!
+  id: ID!
+  mealType: String!
+  name: String!
+  notes: String
+}
+
 type Mutation {
+  acceptBattle(battleId: ID!): BattleModel!
+  activateDietPlan(planId: ID!): DietPlanModel
+  analyzeMealPhoto(input: AnalyzeMealInput!): DietAnalysisResultModel!
+  completeWorkoutSchedule(scheduleId: ID!): WorkoutScheduleModel!
+  completeWorkoutSet(planExerciseId: ID!, sessionId: ID!, setNumber: Int!): WorkoutSessionModel!
+  createBattle(input: CreateBattleInput!): BattleModel!
+  createCheckin(input: CreateCheckinInput!): CheckinModel!
+  createDietPlan(input: CreateDietPlanInput!): DietPlanModel!
   createExercise(input: CreateExerciseInput!): Exercise!
+  createGoal(input: CreateGoalInput!): UserGoalModel!
   createGym(input: CreateGymInput!): Gym!
+  createMeal(input: CreateMealInput!): MealModel!
+  createPost(input: CreatePostInput!): PostModel!
+  createPostComment(input: CreatePostCommentInput!, postId: ID!): PostCommentModel!
+  createReelComment(input: CreateReelCommentInput!): ReelCommentModel!
   createSubmission(input: CreateSubmissionInput!): Submission!
+  createWorkoutPlan(input: CreateWorkoutPlanInput!): WorkoutPlanModel!
+  declineBattle(battleId: ID!): BattleModel!
+  deleteDietPlan(planId: ID!): Boolean!
+  deleteGoal(goalId: ID!): Boolean!
+  deleteMeal(mealId: ID!): Boolean!
+  deletePost(postId: ID!): Boolean!
+  deleteReel(submissionId: ID!): DeleteReelResult!
+  deleteReelComment(commentId: ID!): Boolean!
+  deleteWorkoutPlan(planId: ID!): Boolean!
+  deleteWorkoutSchedule(scheduleId: ID!): Boolean!
   login(input: LoginInput!): AuthPayload!
+  markBattleResultsSeen: Boolean!
+  markNotificationsRead(ids: [String!]): Boolean!
+  reactToCheckin(checkinId: ID!): Boolean!
+  recordReelView(submissionId: ID!): ReelViewResult!
   register(input: RegisterInput!): AuthPayload!
+  reportPost(input: ReportPostInput!, postId: ID!): Boolean!
+  reportReel(input: ReportReelInput!): Boolean!
+  scheduleWorkout(input: ScheduleWorkoutInput!): WorkoutScheduleModel!
+  startWorkoutSession(planId: ID!, scheduleId: ID): WorkoutSessionModel!
+  suggestDietGoal(objective: String!): UserDietGoalModel!
+  suggestDietGoalWithAI(objective: String!): UserDietGoalModel!
+  togglePostLike(postId: ID!): Boolean!
+  toggleReelLike(submissionId: ID!): ReelLikeResult!
+  updateDietGoal(input: UpdateDietGoalInput!): UserDietGoalModel!
+  updateGoal(goalId: ID!, input: UpdateGoalInput!): UserGoalModel!
+  updatePrivacySettings(input: UpdatePrivacyInput!): PrivacySettingsModel!
   updateProfile(input: UpdateProfileInput!): User!
+  updateReelReportStatus(reportId: ID!, status: String!): Boolean!
+  updateWorkoutPlan(input: UpdateWorkoutPlanInput!, planId: ID!): WorkoutPlanModel!
+  updateWorkoutPlanExercises(exercises: [WorkoutPlanExerciseInput!]!, planId: ID!): WorkoutPlanModel!
+}
+
+type MyRankingPositionModel {
+  category: String!
+  isTopOne: Boolean!
+  rank: Int
+  value: Float
+}
+
+type NotificationModel {
+  createdAt: DateTime!
+  id: ID!
+  read: Boolean!
+  referenceId: String!
+  referenceType: String!
+  type: String!
+}
+
+type PendingBattlesSummaryModel {
+  latest: BattleModel
+  total: Int!
+}
+
+type PostAuthorModel {
+  avatarUrl: String
+  id: ID!
+  instagramUsername: String
+  name: String
+}
+
+type PostCommentModel {
+  author: PostAuthorModel!
+  content: String!
+  createdAt: DateTime!
+  id: ID!
+  replies: [PostCommentModel!]
+}
+
+type PostLiftModel {
+  exerciseName: String!
+  id: ID!
+  reps: Int!
+  weight: Float!
+}
+
+type PostModel {
+  author: PostAuthorModel!
+  commentCount: Int!
+  content: String!
+  createdAt: DateTime!
+  id: ID!
+  isOwner: Boolean!
+  lift: PostLiftModel
+  likeCount: Int!
+  likedByMe: Boolean!
+  tags: [String!]!
+}
+
+type PostsFeedModel {
+  hasMore: Boolean!
+  page: Int!
+  posts: [PostModel!]!
+}
+
+type PrivacySettingsModel {
+  autoBattlePosts: Boolean!
+  publicCheckin: Boolean!
+  publicProfile: Boolean!
+  showInRankings: Boolean!
 }
 
 type Query {
+  activeBattles: [BattleModel!]!
+  activeCheckins(city: String): [CheckinModel!]!
+  activeDietPlan: DietPlanModel
+  battle(battleId: ID!): BattleModel!
+  battleHistory(userId: ID): [BattleModel!]!
+  cityRankings(category: RankingCategory!, city: String): CityRankingsResultModel!
+  dietDashboard(date: String): DietDashboardModel!
+  dietWeeklySummary: [DietDaySummaryModel!]!
+  exerciseCatalog(search: String): [ExerciseCatalogModel!]!
   exerciseWorkouts(exerciseId: ID!, gymId: ID!): [WorkoutEntry!]!
   exercises: [Exercise!]!
   getRanking(exerciseId: ID!, gymId: ID!): [RankingEntry!]!
-  getReels: [ReelEntry!]!
+  getReels(mineOnly: Boolean = false): [ReelEntry!]!
   gymExercises(gymId: ID!): [GymExerciseScore!]!
   gyms: [Gym!]!
   me: User!
+  myBattles: [BattleModel!]!
+  myDietGoal: UserDietGoalModel
+  myDietPlans: [DietPlanModel!]!
+  myGoals(status: String): [UserGoalModel!]!
+  myMetrics: UserMetrics!
+  myNotifications: [NotificationModel!]!
+  myPrivacySettings: PrivacySettingsModel!
+  myRankingPositions: [MyRankingPositionModel!]!
+  myWorkoutPlans: [WorkoutPlanModel!]!
+  pendingBattles: [BattleModel!]!
+  pendingBattlesSummary: PendingBattlesSummaryModel!
+  pendingReelReports: [ReelReportModel!]!
+  postComments(postId: ID!): [PostCommentModel!]!
+  postsFeed(city: String, page: Int = 1): PostsFeedModel!
+  reelComments(limit: Int! = 20, offset: Int! = 0, submissionId: ID!): ReelCommentsPage!
+  schedulesForDate(date: String!): [WorkoutScheduleModel!]!
+  searchUsers(q: String!): [UserSearchResultModel!]!
+  unreadNotificationCount: Int!
+  unseenBattleResults: [BattleModel!]!
+  userBattleStats(userId: ID): UserBattleStatsModel!
+  userProfile(userId: ID!): UserProfileModel!
+  workoutCalendar(month: Int!, year: Int!): [CalendarDayModel!]!
+  workoutPlan(planId: ID!): WorkoutPlanModel!
+  workoutSession(sessionId: ID!): WorkoutSessionModel!
+  workoutStreak: Int!
+}
+
+enum RankingCategory {
+  BENCH
+  CONSISTENCY
+  DEADLIFT
+  EVOLUTION
+  OVERALL
+  REELS
+  SQUAT
 }
 
 type RankingEntry {
@@ -99,22 +527,81 @@ type RankingEntry {
   weight: Float!
 }
 
+type ReelCommentModel {
+  createdAt: DateTime!
+  id: ID!
+  parentId: String
+  replies: [ReelCommentModel!]
+  text: String!
+  userId: ID!
+  userName: String!
+}
+
+type ReelCommentsPage {
+  hasMore: Boolean!
+  items: [ReelCommentModel!]!
+  total: Int!
+}
+
 type ReelEntry {
+  commentCount: Int!
   createdAt: DateTime!
   exerciseName: String!
   gymName: String!
   id: ID!
   instagramUsername: String
+  isOwner: Boolean!
+  likeCount: Int!
+  likedByMe: Boolean!
   userEmail: String!
+  userId: ID!
   userName: String
   videoUrl: String!
+  viewCount: Int!
   weight: Float!
+}
+
+type ReelLikeResult {
+  likeCount: Int!
+  liked: Boolean!
+}
+
+type ReelReportModel {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  reason: String!
+  reelExerciseName: String!
+  reporterName: String!
+  status: String!
+  submissionId: ID!
+}
+
+type ReelViewResult {
+  counted: Boolean!
+  viewCount: Int!
 }
 
 input RegisterInput {
   email: String!
   name: String
   password: String!
+}
+
+input ReportPostInput {
+  description: String
+  reason: String!
+}
+
+input ReportReelInput {
+  description: String
+  reason: String!
+  submissionId: ID!
+}
+
+input ScheduleWorkoutInput {
+  planId: ID!
+  scheduledDate: DateTime!
 }
 
 type Submission {
@@ -128,29 +615,162 @@ type Submission {
   weight: Float!
 }
 
+input UpdateDietGoalInput {
+  aiExplanation: String
+  caloriesGoal: Int!
+  carbGoalG: Float!
+  fatGoalG: Float!
+  objective: String!
+  proteinGoalG: Float!
+}
+
+input UpdateGoalInput {
+  description: String
+  status: String
+  targetValue: Float
+  title: String
+  unit: String
+}
+
+input UpdatePrivacyInput {
+  autoBattlePosts: Boolean
+  publicCheckin: Boolean
+  publicProfile: Boolean
+  showInRankings: Boolean
+}
+
 input UpdateProfileInput {
   appIconUrl: String
   avatarUrl: String
+  birthDate: DateTime
+  city: String
+  heightCm: Float
   instagramUsername: String
   name: String
+  sex: String
   theme: String
   wallpaperUrl: String
+  weightKg: Float
+}
+
+input UpdateWorkoutPlanInput {
+  description: String
+  name: String
 }
 
 type User {
   appIconUrl: String
   avatarUrl: String
+  birthDate: DateTime
+  bmi: Float
+  city: String
   createdAt: DateTime!
   email: String!
+  exerciseTitles: [ExerciseTitle!]
+  globalRank: String
+  globalScore: Int
+  heightCm: Float
+  id: ID!
+  instagramUsername: String
+  name: String
+  role: String
+  sex: String
+  theme: String
+  updatedAt: DateTime!
+  wallpaperUrl: String
+  weightKg: Float
+}
+
+type UserBadge {
+  description: String!
+  earnedAt: DateTime
+  id: String!
+  title: String!
+}
+
+type UserBadgeModel {
+  description: String!
+  earnedAt: DateTime
+  id: String!
+  title: String!
+}
+
+type UserBattleStatsModel {
+  bestWinStreak: Int!
+  draws: Int!
+  favoriteExerciseName: String
+  losses: Int!
+  totalBattles: Int!
+  winRate: Int!
+  winStreak: Int!
+  wins: Int!
+}
+
+type UserDietGoalModel {
+  aiExplanation: String
+  caloriesGoal: Int!
+  carbGoalG: Float!
+  fatGoalG: Float!
+  id: ID!
+  objective: String!
+  proteinGoalG: Float!
+}
+
+type UserGoalModel {
+  completedAt: DateTime
+  createdAt: DateTime!
+  currentValue: Float!
+  deadline: DateTime
+  description: String
+  exerciseId: ID
+  exerciseName: String
+  id: ID!
+  progressPercent: Int!
+  status: String!
+  targetValue: Float!
+  title: String!
+  unit: String!
+}
+
+type UserMetrics {
+  badges: [UserBadge!]!
+  bodyMetricHistory: [BodyMetricPoint!]!
+  completedGoals: [UserGoalModel!]!
+  currentBmi: Float
+  currentHeightCm: Float
+  currentStreak: Int!
+  currentWeightKg: Float
+  longestStreak: Int!
+  maxWeightByExercise: [ExerciseMaxWeight!]!
+  submissionsThisMonth: Int!
+  weeklyProgress: [WeeklyProgressPoint!]!
+}
+
+type UserProfileModel {
+  avatarUrl: String
+  badges: [UserBadgeModel!]!
+  bmi: Float
+  city: String
   exerciseTitles: [ExerciseTitle!]
   globalRank: String
   globalScore: Int
   id: ID!
   instagramUsername: String
   name: String
-  theme: String
-  updatedAt: DateTime!
-  wallpaperUrl: String
+  submissionsCount: Int!
+}
+
+type UserSearchResultModel {
+  avatarUrl: String
+  id: ID!
+  instagramUsername: String
+  name: String
+}
+
+type WeeklyProgressPoint {
+  submissions: Int!
+  totalVolume: Float!
+  weekLabel: String!
 }
 
 type WorkoutEntry {
@@ -163,4 +783,63 @@ type WorkoutEntry {
   userEmail: String!
   userName: String!
   weight: Float!
+}
+
+input WorkoutPlanExerciseInput {
+  exerciseId: ID!
+  orderIndex: Int! = 0
+  reps: Int! = 10
+  restSeconds: Int! = 60
+  sets: Int! = 3
+  suggestedWeight: Float
+}
+
+type WorkoutPlanExerciseModel {
+  exerciseId: ID!
+  exerciseName: String!
+  id: ID!
+  muscleGroup: String
+  orderIndex: Int!
+  reps: Int!
+  restSeconds: Int!
+  sets: Int!
+  suggestedWeight: Float
+}
+
+type WorkoutPlanModel {
+  createdAt: DateTime!
+  description: String
+  exercises: [WorkoutPlanExerciseModel!]!
+  id: ID!
+  name: String!
+}
+
+type WorkoutScheduleModel {
+  completed: Boolean!
+  completedAt: DateTime
+  id: ID!
+  planId: ID!
+  planName: String!
+  scheduledDate: DateTime!
+  status: String!
+}
+
+type WorkoutSessionModel {
+  completedAt: DateTime
+  id: ID!
+  planId: ID!
+  planName: String!
+  sets: [WorkoutSessionSetModel!]!
+  startedAt: DateTime!
+}
+
+type WorkoutSessionSetModel {
+  completed: Boolean!
+  exerciseName: String!
+  id: ID!
+  planExerciseId: ID!
+  reps: Int
+  restSeconds: Int
+  setNumber: Int!
+  suggestedWeight: Float
 }
